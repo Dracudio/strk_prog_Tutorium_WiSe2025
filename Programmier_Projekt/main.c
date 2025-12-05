@@ -27,21 +27,47 @@ Studimon:
 #include <stdlib.h>   // rand, srand
 #include <time.h>     // time
 
+typedef enum Typ
+{
+
+} Typ;
+
 typedef struct Aktion {
 	char name[30];
-	int staerke;
-	int Aktionstyp; // 0 = angriff, 1 = sp.angriff, 2 = Buff, 3 = Debuff
-	int genauigkeit;
+	int staerke;	// 45
+	int Aktionstyp; // 0: angriff, 1: sp.angriff, 2: Buff/Debuff
+	int genauigkeit;// 90
 } Aktion;
 
 typedef struct Studimon {
 	char name[30];
-	int hp;
-	int verteidigung;
-	int spverteidigung;
-	int agilitaet;
-	int kritschance;
+	int hp;				// 100
+	int verteidigung;	// 10
+	int spverteidigung;	// 10
+	int agilitaet;		// 20
+	int kritschance;	// 10
+	Typ typ;
+	Aktion aktionen[4];
 } Studimon;
+
+void angriff(int* hp, int staerke, int verteidigung, int kritschance) {
+
+	int schaden = staerke - verteidigung;
+
+	if (schaden < 0) {
+		schaden = 0;
+	}
+
+	if ((rand() % 100) < kritschance) {
+		schaden *= 2;
+		printf("Kritischer Treffer!\n");
+	}
+
+	*hp -= schaden;
+	if (*hp < 0) {
+		*hp = 0;
+	}
+}
 
 void zeigeMenue() {
 
@@ -70,19 +96,6 @@ int main() {
 		case 0:
 			// Das Spiel
 			printf("Spiel wird gestartet...\n");
-			// Programmieraufgabe:
-			// Zu entwickeln ist eine Funktion "angriff", die den Angriff eines Studimons auf ein anderes dastellt.
-			//
-			// Dabei sollen die HP des anzugreifenden Studimons per Referenz übergeben werden.
-			// Weitere benötigte Werte sollen als Parameter per Wert übergeben werden.
-			// Der Schaden wird berechnet aus: Stärke - Verteidigung
-			// 
-			// Das Studimon soll die Chance haben in der Funktion einen kritischen Treffer zu landen.
-			// Die Variabel Kirtchance ist ein integer und gibt die Wahrscheinlichkeit in Prozent an (z.B. 20 = 20%).
-			// Mit dem Code "rand() % 100 + 1" kann eine Zufallszahl zwischen 0 und 99 generiert werden.
-			// Falls das Studimon einen kritischen Treffer landet, soll der Schaden verdoppelt werden.
-			// 
-			// Es soll ebenfalls darauf geachtet werden, dass die HP nicht unter 0 fallen können und es keinen negativen Schaden gibt.
 			break;
 		case 1:
 			// Spielkonfigurationen
@@ -96,7 +109,7 @@ int main() {
 			case 0:
 				printf("Studimons im Team ändern...\n");
 				// Programmieraufgabe:
-				// Zu entwickeln ist eine Funktion Erstelle_<StudimonName> die ein vollständiges Studimon erstellt, initialisiert und zurückgibt.
+				// Zu entwickeln ist eine Funktion erstelle_<StudimonName> die ein vollständiges Studimon erstellt, initialisiert und zurückgibt.
 				// Hier könnte ihr krativ sein und euch eigene Studimons ausdenken sowie ihre Werte und Aktionen.
 				// Es muss mindestens eine Aktion geben, die das Studimon im Kampf einsetzen kann.
 				break;
