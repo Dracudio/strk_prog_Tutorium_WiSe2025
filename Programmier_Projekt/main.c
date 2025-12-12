@@ -24,9 +24,10 @@ Studimon:
 */
 
 #include <stdio.h>
-#include <stdlib.h>   // rand, srand
-#include <time.h>     // time
+#include <stdlib.h>   // für randomizer
+#include <time.h>     // seed für randomizer
 
+// Struktur eines Studimons
 typedef enum Typ
 {
 
@@ -50,6 +51,7 @@ typedef struct Studimon {
 	Aktion aktionen[4];
 } Studimon;
 
+// Funktionen
 void angriff(int* hp, int staerke, int verteidigung, int kritschance) {
 
 	int schaden = staerke - verteidigung;
@@ -79,6 +81,14 @@ void zeigeMenue() {
 	printf("-> ");
 }
 
+// Programmieraufgabe:
+//
+// Zu entwickeln ist eine Funktion "eingabe"
+// Jedes mal wenn die Funktion aufgerufen wird, soll der Benutzer eine Zahl eingeben, die dann von der Funktion zurückgegeben wird.
+//
+// Die Funktion soll sicherstellen, dass die Eingabe eine gültige Zahl ist (also keine Buchstaben oder Sonderzeichen).
+
+// Hauptprogramm
 int main() {
 
 	srand(time(NULL));   // Seed setzen (SEHR wichtig!)
@@ -89,7 +99,9 @@ int main() {
 	do {
 		zeigeMenue();
 
-		scanf_s("%d", &auswahl);
+		if(scanf_s("%d", &auswahl) != 1) {
+			printf("Ungültige Eingabe! Bitte gib eine Zahl ein.\n");
+		}
 		printf("\n");
 
 		switch (auswahl) {
