@@ -30,7 +30,7 @@ Studimon:
 // Struktur eines Studimons
 typedef enum Typ
 {
-
+	normal,
 } Typ;
 
 typedef struct Aktion {
@@ -38,6 +38,7 @@ typedef struct Aktion {
 	int staerke;	// 45
 	int Aktionstyp; // 0: angriff, 1: sp.angriff, 2: Buff/Debuff
 	int genauigkeit;// 90
+	int isNull;
 } Aktion;
 
 typedef struct Studimon {
@@ -49,7 +50,48 @@ typedef struct Studimon {
 	int kritschance;	// 10
 	Typ typ;
 	Aktion aktionen[4];
+	int isNull;
 } Studimon;
+
+// Hilfsfunktionen
+int zahlEingabe() {
+	int eingabe;
+	int ergebnis;
+
+	do {
+		printf("-> ");
+		ergebnis = scanf_s("%d", &eingabe);
+		if (ergebnis != 1) {
+			printf("Ungueltige Eingabe! Bitte gib eine Zahl ein.\n");
+			while (getchar() != '\n')
+				continue;
+		}
+	} while (ergebnis != 1);
+
+	return eingabe;
+}
+void StudimonAusgabe(Studimon s) {
+	printf("Name: %s\n", s.name);
+	printf("HP: %d\n", s.hp);
+	printf("Verteidigung: %d\n", s.verteidigung);
+	printf("SP-Verteidigung: %d\n", s.spverteidigung);
+	printf("Agilitaet: %d\n", s.agilitaet);
+	printf("Kritschance: %d%%\n", s.kritschance);
+	printf("Aktionen:\n");
+	for (int i = 0; i < 4; i++) {
+		if (!s.aktionen[i].isNull) {
+			printf("  [%d] %s (Staerke: %d, Genauigkeit: %d%%)\n", i, s.aktionen[i].name, s.aktionen[i].staerke, s.aktionen[i].genauigkeit);
+		}
+	}
+}
+void zeigeMenue() {
+
+	printf("Willkommen in Studimon 3000\n");
+	printf("****************************\n");
+	printf("[0] Spiel starten\n");
+	printf("[1] Spielkonfigurationen\n");
+	printf("[2] Beenden\n");
+}
 
 // Funktionen
 void angriff(int* hp, int staerke, int verteidigung, int kritschance) {
@@ -70,38 +112,53 @@ void angriff(int* hp, int staerke, int verteidigung, int kritschance) {
 		*hp = 0;
 	}
 }
-
-void zeigeMenue() {
-
-	printf("Willkommen in Studimon 3000\n");
-	printf("****************************\n");
-	printf("[0] Spiel starten\n");
-	printf("[1] Spielkonfigurationen\n");
-	printf("[2] Beenden\n");
-	printf("-> ");
+struct Studimon erstelle_Prototyp() {
+	Studimon prototyp;
+	// Initialisierung der Werte
+	strcpy_s(prototyp.name, sizeof(prototyp.name), "Prototyp");
+	prototyp.hp = 100;
+	prototyp.verteidigung = 10;
+	prototyp.spverteidigung = 10;
+	prototyp.agilitaet = 20;
+	prototyp.kritschance = 10;
+	prototyp.typ = normal;
+	// Initialisierung der Aktionen
+	strcpy_s(prototyp.aktionen[0].name, sizeof(prototyp.aktionen[0].name), "Tackle");
+	prototyp.aktionen[0].staerke = 45;
+	prototyp.aktionen[0].Aktionstyp = 0;
+	prototyp.aktionen[0].genauigkeit = 90;
+	prototyp.aktionen[0].isNull = 0;
+	// Markiere verbleibende Aktionen als leer
+	for (int i = 1; i < 4; i++) {
+		prototyp.aktionen[i].isNull = 1;
+	}
+	prototyp.isNull = 0;
+	return prototyp;
 }
-
-// Programmieraufgabe:
-//
-// Zu entwickeln ist eine Funktion "eingabe"
-// Jedes mal wenn die Funktion aufgerufen wird, soll der Benutzer eine Zahl eingeben, die dann von der Funktion zurückgegeben wird.
-//
-// Die Funktion soll sicherstellen, dass die Eingabe eine gültige Zahl ist (also keine Buchstaben oder Sonderzeichen).
 
 // Hauptprogramm
 int main() {
 
-	srand(time(NULL));   // Seed setzen (SEHR wichtig!)
-	int AnzahlStudimons = 3;
-
+	// Initialisierungen
+	srand(time(NULL));			// Seed setzen für randomizer
 	int auswahl;				// Variable für Auswahloptionen
+	int AnzahlStudimons = 3;
+	Studimon spieler1[6];
+	Studimon spieler2[6];
+
+	for (int i = 0; i < 6; i++) {
+		// Initialisierung der Studimons
+		spieler1[i].isNull = 1;
+		for (int j = 0; j < 4; j++) {
+			spieler1[i].aktionen[j].isNull = 1;
+			spieler2[i].aktionen[j].isNull = 1;
+		}
+	}
 
 	do {
 		zeigeMenue();
 
-		if(scanf_s("%d", &auswahl) != 1) {
-			printf("Ungültige Eingabe! Bitte gib eine Zahl ein.\n");
-		}
+		auswahl = zahlEingabe();
 		printf("\n");
 
 		switch (auswahl) {
@@ -111,28 +168,25 @@ int main() {
 			break;
 		case 1:
 			// Spielkonfigurationen
-			printf("Was möchtest du ändern?\n");
-			printf("[0] Studimons im Team ändern\n");
-			printf("[1] Anzahl der Studimons ändern\n");
+			printf("Was moechtest du aendern?\n");
+			printf("[0] Studimons im Team aendern\n");
+			printf("[1] Anzahl der Studimons aendern\n");
 			printf("[2] Zurück zum Hauptmenü\n");
-			printf("-> "), scanf_s("%d", &auswahl);
+			auswahl = zahlEingabe();
 
 			switch (auswahl) {
 			case 0:
-				printf("Studimons im Team ändern...\n");
-				// Programmieraufgabe:
-				// Zu entwickeln ist eine Funktion erstelle_<StudimonName> die ein vollständiges Studimon erstellt, initialisiert und zurückgibt.
-				// Hier könnte ihr krativ sein und euch eigene Studimons ausdenken sowie ihre Werte und Aktionen.
-				// Es muss mindestens eine Aktion geben, die das Studimon im Kampf einsetzen kann.
+				printf("Studimons im Team aendern...\n");
+				spieler1[0] = erstelle_Prototyp();
+				StudimonAusgabe(spieler1[0]);
 				break;
 			case 1:
 				do {
 
 				printf("Gib die Anzahl der Studimons pro Spieler ein (1-6): ");
-				scanf_s("%d", &AnzahlStudimons);
-
+				AnzahlStudimons = zahlEingabe();
 				if (AnzahlStudimons < 1 || AnzahlStudimons > 6) {
-					printf("Ungültige Anzahl! Bitte gib eine Zahl zwischen 1 und 6 ein.\n");
+					printf("Ungueltige Anzahl! Bitte gib eine Zahl zwischen 1 und 6 ein.\n");
 				}
 
 				} while (AnzahlStudimons < 1 || AnzahlStudimons > 6);
