@@ -9,18 +9,10 @@ Menü:
 	* Studimon wechseln falls KO durch Kampfaktion
 	* Spieler wechseln
 - Spielkonfigurationen
-	* Art der Studimons für jeden Spieler auswählen
 	* Anzahl der Studimons pro Spieler festlegen
+	* Art der Studimons für jeden Spieler auswählen
+	* Studimons anschauen
 - Beenden
-
-Studimon:
-- HP
-- MP
-- Schaden
-- Verteidigung
-- Agilität
-- Kritschance
-
 */
 
 #include <stdio.h>
@@ -35,6 +27,7 @@ typedef enum Typ
 
 typedef struct Aktion {
 	char name[30];
+	Typ typ;
 	int AP;			// 10
 	int staerke;	// 45
 	int Aktionstyp; // 0: angriff, 1: sp.angriff, 2: Buff/Debuff
@@ -44,12 +37,12 @@ typedef struct Aktion {
 
 typedef struct Studimon {
 	char name[30];
+	Typ typ;
 	int hp;				// 100
 	int verteidigung;	// 10
 	int spverteidigung;	// 10
 	int agilitaet;		// 20
 	int kritschance;	// 10
-	Typ typ;
 	Aktion aktionen[4];
 	int isNull;
 } Studimon;
@@ -83,9 +76,21 @@ int zahlEingabe() {
 //
 // Hinweis: andere Hilfsfunktionen aus dem Programm dürfen verwendet werden.
 //
-
+void TypAusgabe(Typ t) {
+	switch (t) {
+	case normal:	printf("Normal");			break;
+	default:		printf("Unbekannter Typ");	break;
+	}
+}
+char* TypToString(Typ t) {
+	switch (t) {
+	case normal:	return "Normal";
+	default:		return "Unbekannt";
+	}
+}
 void StudimonAusgabe(Studimon s) {
 	printf("Name: %s\n", s.name);
+	printf("Typ: "); TypAusgabe(s.typ); printf("\n");
 	printf("HP: %d\n", s.hp);
 	printf("Verteidigung: %d\n", s.verteidigung);
 	printf("SP-Verteidigung: %d\n", s.spverteidigung);
@@ -94,13 +99,15 @@ void StudimonAusgabe(Studimon s) {
 	printf("Aktionen:\n");
 	for (int i = 0; i < 4; i++) {
 		if (!s.aktionen[i].isNull) {
-			printf("  [%d] %s (Angriffstyp: %d, Staerke: %d, Genauigkeit: %d%%)\n", i, s.aktionen[i].name, s.aktionen[i].Aktionstyp, s.aktionen[i].staerke, s.aktionen[i].genauigkeit);
+			char* typ = TypToString(s.aktionen[i].typ);
+			printf("  [%d] %s (Typ: %s, Angriffstyp: %d, Staerke: %d, Genauigkeit: %d%%)\n", i, s.aktionen[i].name, typ, s.aktionen[i].Aktionstyp, s.aktionen[i].staerke, s.aktionen[i].genauigkeit);
 		}
 		else {
 			printf("  [%d] -- leer --\n", i);
 		}
 	}
 }
+
 void zeigeStudimons() {
 	printf("Verfuegbare Studimons:\n");
 	printf("[0] Prototyp\n");
@@ -130,6 +137,7 @@ struct Studimon erstelle_Prototyp() {
 	prototyp.typ = normal;
 	// Initialisierung der Aktionen
 	strcpy_s(prototyp.aktionen[0].name, sizeof(prototyp.aktionen[0].name), "Tackle");
+	prototyp.aktionen[0].typ = normal;
 	prototyp.aktionen[0].AP = 10;
 	prototyp.aktionen[0].staerke = 45;
 	prototyp.aktionen[0].Aktionstyp = 0;
@@ -220,7 +228,7 @@ int main() {
 			// 
 			// Aktuelle Variablen im Hauptprogramm:
 			// - AnzahlStudimons: Anzahl der Studimons pro Spieler die im Kampf verwendet werden (max. 6)
-			// - spieler1[6], spieler2[6]: Arrays, die die Studimons der beiden Spieler speichert
+			// - spieler1[6], spieler2[6] Arrays, die die Studimons der beiden Spieler speichert
 			// 
 			// Hinweis: Es gibt derzeit nur ein Studimon, den "Prototyp".
 			//
